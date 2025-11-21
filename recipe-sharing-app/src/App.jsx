@@ -1,10 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import AddRecipeForm from './components/AddRecipeForm';
 import RecipeList from './components/RecipeList';
 import RecipeDetails from './components/RecipeDetails';
+import SearchBar from './components/SearchBar';
 
-// Wrapper to pass recipeId from URL params
 const RecipeDetailWrapper = () => {
   const { id } = useParams();
   return <RecipeDetails recipeId={id} />;
@@ -12,10 +12,11 @@ const RecipeDetailWrapper = () => {
 
 function App() {
   return (
-    <Router> {/* <- Checker will detect "Router" here */}
+    <Router>
       <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
         <h1>Recipe Sharing App</h1>
         <AddRecipeForm />
+        <SearchBar />
         <RecipeList />
 
         <Routes>
