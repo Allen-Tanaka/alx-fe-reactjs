@@ -1,15 +1,14 @@
-import React, { useState } from "react";
 import UserContext from "./UserContext";
-import Main from "./Main"; // replace with your root component
+import ProfilePage from "./ProfilePage";
 
 function App() {
-    const [user, setUser] = useState(null);
+  const userData = { name: "Jane Doe", email: "jane.doe@example.com" };
 
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            <Main />
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={userData}>
+      <ProfilePage />
+    </UserContext.Provider>
+  );
 }
 
 export default App;
