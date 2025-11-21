@@ -8,10 +8,10 @@ const DeleteRecipeButton = ({ recipeId }) => {
 
   const handleDelete = () => {
     deleteRecipe(recipeId);
-    navigate('/'); // Redirect to home after deletion
+    navigate('/'); // Redirect after deletion
   };
 
-  return <button onClick={handleDelete} style={{ marginLeft: '10px' }}>Delete Recipe</button>;
+  return <button onClick={handleDelete}>Delete Recipe</button>;
 };
 
 export default DeleteRecipeButton;
