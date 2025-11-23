@@ -1,24 +1,36 @@
 import { useState } from "react";
-import { fetchUserData } from "../services/githubService";
+import { searchUsers, fetchUserData } from "../services/githubService";
 
 export default function Search() {
-  const [query, setQuery] = useState("");
-  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState("");
+  const [location, setLocation] = useState("");
+  const [minRepos, setMinRepos] = useState("");
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const handleSubmit = async (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
+    setResults([]);
+    setPage(1);
+    performSearch(1);
+  };
 
-    if (!query.trim()) return;
-
+  const performSearch = async (pageNumber) => {
     setLoading(true);
     setError("");
-    setUser(null);
 
     try {
-      const data = await fetchUserData(query);
-      setUser(data);
+      const { items, total } = await searchUsers(username, location, minRepos, pageNumber);
+
+      if (items.length === 0) {
+        setError("Looks like we cant find the user");
+      }
+
+      setResults((prev) => [...prev, ...items]);
+      setTotalCount(total);
     } catch (err) {
       setError("Looks like we cant find the user");
     } finally {
@@ -26,49 +38,94 @@ export default function Search() {
     }
   };
 
-  return (
-    <div className="max-w-xl mx-auto mt-10 p-4 border rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">GitHub User Search</h2>
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    performSearch(nextPage);
+  };
 
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+  return (
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow">
+      <h2 className="text-2xl font-bold mb-6">Advanced GitHub User Search</h2>
+
+      <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <input
           type="text"
-          placeholder="Enter GitHub username..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 border p-2 rounded"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="border p-2 rounded w-full"
         />
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+
+        <input
+          type="text"
+          placeholder="Location (optional)"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+
+        <input
+          type="number"
+          placeholder="Min repos (optional)"
+          value={minRepos}
+          onChange={(e) => setMinRepos(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+
+        <button className="col-span-1 md:col-span-3 bg-blue-600 text-white py-2 rounded">
           Search
         </button>
       </form>
 
-      {/* Loading state */}
+      {/* Loading */}
       {loading && <p>Loading...</p>}
 
-      {/* Error state */}
+      {/* Error */}
       {error && <p className="text-red-600">{error}</p>}
 
-      {/* Success state */}
-      {user && (
-        <div className="mt-4 flex items-center gap-4">
-          <img
-            src={user.avatar_url}
-            alt={`${user.login} avatar`}
-            className="w-20 h-20 rounded-full"
-          />
+      {/* Results */}
+      {results.length > 0 && (
+        <div>
+          <p className="mb-4 text-gray-600">
+            Showing {results.length} of {totalCount} results
+          </p>
 
-          <div>
-            <h3 className="text-lg font-semibold">{user.name || user.login}</h3>
-            <a
-              href={user.html_url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue-500 underline"
-            >
-              View GitHub Profile
-            </a>
+          <div className="grid gap-4">
+            {results.map((user) => (
+              <div
+                key={user.id}
+                className="flex items-center gap-4 p-4 border rounded-lg shadow-sm"
+              >
+                <img
+                  src={user.avatar_url}
+                  alt={user.login}
+                  className="w-16 h-16 rounded-full"
+                />
+                <div>
+                  <h3 className="font-semibold text-lg">{user.login}</h3>
+                  <a
+                    href={user.html_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    View Profile
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
+
+          {/* Pagination */}
+          {results.length < totalCount && (
+            <button
+              onClick={loadMore}
+              className="mt-6 bg-gray-800 text-white px-5 py-2 rounded"
+            >
+              Load More
+            </button>
+          )}
         </div>
       )}
     </div>
