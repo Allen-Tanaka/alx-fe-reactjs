@@ -17,6 +17,7 @@ const PostsComponent = () => {
     data,
     isLoading,
     isError,
+    error,      
     refetch,
   } = useQuery("posts", fetchPosts);
 
@@ -24,9 +25,9 @@ const PostsComponent = () => {
     return <p>Loading posts...</p>;
   }
 
-  // ✅ Checker requires isError
+
   if (isError) {
-    return <p>Error fetching posts</p>;
+    return <p>Error: {error.message}</p>;
   }
 
   return (
