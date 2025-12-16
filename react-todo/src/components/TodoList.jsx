@@ -7,17 +7,13 @@ const TodoList = () => {
   ]);
 
   const addTodo = (text) => {
-    const newTodo = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
+    const newTodo = { id: Date.now(), text, completed: false };
     setTodos([...todos, newTodo]);
   };
 
   const toggleTodo = (id) => {
     setTodos(
-      todos.map(todo => 
+      todos.map(todo =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
@@ -48,11 +44,19 @@ const TodoList = () => {
           <li
             key={todo.id}
             onClick={() => toggleTodo(todo.id)}
-            style={{ textDecoration: todo.completed ? 'line-through' : 'none', cursor: 'pointer' }}
+            style={{
+              textDecoration: todo.completed ? 'line-through' : 'none',
+              cursor: 'pointer'
+            }}
             data-testid={`todo-${todo.id}`}
           >
             {todo.text}
-            <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }} data-testid={`delete-${todo.id}`}>Delete</button>
+            <button
+              onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}
+              data-testid={`delete-${todo.id}`}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -61,4 +65,3 @@ const TodoList = () => {
 };
 
 export default TodoList;
-
