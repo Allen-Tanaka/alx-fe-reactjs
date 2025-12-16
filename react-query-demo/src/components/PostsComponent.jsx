@@ -15,8 +15,8 @@ const fetchPosts = async () => {
 const PostsComponent = () => {
   const {
     data,
-    error,
     isLoading,
+    isError,
     refetch,
   } = useQuery("posts", fetchPosts);
 
@@ -24,7 +24,8 @@ const PostsComponent = () => {
     return <p>Loading posts...</p>;
   }
 
-  if (error) {
+  // ✅ Checker requires isError
+  if (isError) {
     return <p>Error fetching posts</p>;
   }
 
@@ -32,6 +33,7 @@ const PostsComponent = () => {
     <div>
       <h2>Posts</h2>
 
+      {/* ✅ Data refetch interaction */}
       <button onClick={() => refetch()}>
         Refetch Posts
       </button>
