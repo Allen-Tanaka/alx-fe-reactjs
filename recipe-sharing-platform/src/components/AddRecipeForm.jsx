@@ -4,29 +4,40 @@ const AddRecipeForm = () => {
   const [title, setTitle] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!title.trim()) {
+      newErrors.title = "Recipe title is required.";
+    }
+
+    if (!ingredients.trim()) {
+      newErrors.ingredients = "Ingredients are required.";
+    } else if (ingredients.split(",").length < 2) {
+      newErrors.ingredients =
+        "Please enter at least two ingredients.";
+    }
+
+    if (!steps.trim()) {
+      newErrors.steps = "Preparation steps are required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!title || !ingredients || !steps) {
-      setError("All fields are required.");
+    if (!validate()) {
       return;
     }
-
-    const ingredientsList = ingredients.split(",");
-
-    if (ingredientsList.length < 2) {
-      setError("Please enter at least two ingredients.");
-      return;
-    }
-
-    setError("");
 
     const newRecipe = {
       title,
-      ingredients: ingredientsList,
+      ingredients: ingredients.split(","),
       steps,
     };
 
@@ -36,6 +47,7 @@ const AddRecipeForm = () => {
     setTitle("");
     setIngredients("");
     setSteps("");
+    setErrors({});
   };
 
   return (
@@ -48,10 +60,6 @@ const AddRecipeForm = () => {
           Add New Recipe
         </h2>
 
-        {error && (
-          <p className="text-red-500 text-sm mb-3">{error}</p>
-        )}
-
         {/* Recipe Title */}
         <div className="mb-4">
           <label className="block text-gray-700 mb-1">
@@ -62,8 +70,12 @@ const AddRecipeForm = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
-            placeholder="Enter recipe title"
           />
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.title}
+            </p>
+          )}
         </div>
 
         {/* Ingredients */}
@@ -76,8 +88,12 @@ const AddRecipeForm = () => {
             onChange={(e) => setIngredients(e.target.value)}
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
             rows="3"
-            placeholder="e.g. Eggs, Flour, Milk"
           ></textarea>
+          {errors.ingredients && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.ingredients}
+            </p>
+          )}
         </div>
 
         {/* Preparation Steps */}
@@ -90,8 +106,12 @@ const AddRecipeForm = () => {
             onChange={(e) => setSteps(e.target.value)}
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
             rows="4"
-            placeholder="Describe the cooking steps"
           ></textarea>
+          {errors.steps && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.steps}
+            </p>
+          )}
         </div>
 
         {/* Submit Button */}
